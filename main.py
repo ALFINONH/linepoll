@@ -15,6 +15,13 @@ import os.path, time, json, concurrent.futures, requests, subprocess, threading,
 _file_name_ = os.path.splitext(os.path.basename(__file__))[0]
 starting_timer = time.time()
 
+
+"""
+ex:
+client = line.LineClient(email='YOUR_EMAIL',password='YOUR_PASS',apps='IOSIPAD')
+
+client = line.LineClient(authToken='YOUR_TOKEN', apps='SEE AT CONFIG')
+"""
 client = line.LineClient(authKey='LINE_AUTHKEY',apps="IOS")
 client_mid = client.profile.mid
 responsename = f'{_file_name_}-{client.profile.displayName}'
